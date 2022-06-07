@@ -40,12 +40,15 @@ class Scenario:
         time.sleep(1)
 
     def click_using_css(self, css):
+        time.sleep(1)
         self.context.driver.find_element_by_css_selector(css).click()
 
     def click_using_name(self, name):
+        time.sleep(1)
         self.context.driver.find_element_by_name(name).click()
 
     def click_using_id(self, id):
+        time.sleep(1)
         self.context.driver.find_element_by_id(id).click()
 
     def wait_for_id_to_be_present(self, element):
@@ -56,9 +59,13 @@ class Scenario:
             raise te
 
     def id_is_present(self, element):
-        if self.context.driver.find_element(By.ID, element).is_displayed():
-            return True
-        else:
+        try:
+            WebDriverWait(self.context.driver, 5).until(EC.presence_of_element_located((By.ID, element)))
+            if self.context.driver.find_element(By.ID, element).is_displayed():
+                return True
+        except NoSuchElementException:
+            return False
+        except TimeoutException:
             return False
 
     def wait_for_name_to_be_present(self, element):
@@ -81,17 +88,6 @@ class Scenario:
             print('css selector = ' + element + ' cannot be found')
             raise te
 
-    # #def css_is_present(self, element):
-    #     #try:
-    #      #   WebDriverWait(self.context.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, element)))
-    #    # except Exception:
-    #      #   pass
-    #
-    #     if self.context.driver.find_element(By.CSS_SELECTOR, element).is_displayed():
-    #         return True
-    #     else:
-    #         return False
-
     def wait_for_xpath_to_be_present(self, element):
         try:
             WebDriverWait(self.context.driver, 20).until(EC.presence_of_element_located((By.XPATH, element)))
@@ -102,7 +98,7 @@ class Scenario:
     def xpath_is_present(self, element):
         try:
             WebDriverWait(self.context.driver, 5).until(EC.presence_of_element_located((By.XPATH, element)))
-            if (self.context.driver.find_element(By.XPATH, element).is_displayed()):
+            if self.context.driver.find_element(By.XPATH, element).is_displayed():
                 return True
         except NoSuchElementException:
             return False
@@ -112,7 +108,7 @@ class Scenario:
     def css_is_present(self, element):
         try:
             WebDriverWait(self.context.driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, element)))
-            if(self.context.driver.find_element(By.CSS_SELECTOR, element).is_displayed()):
+            if self.context.driver.find_element(By.CSS_SELECTOR, element).is_displayed():
                 return True
         except NoSuchElementException:
             return False
@@ -130,3 +126,13 @@ class Scenario:
     def get_text_from_xpath(self, element):
         text = self.context.driver.find_element(By.XPATH, element).text
         return text
+
+    def get_text_from_id(self, element):
+        self.wait_for_id_to_be_present(element)
+        text = self.context.driver.find_element(By.ID, element).text
+        return text
+
+    def get_attribute_from_id(self, element):
+        self.wait_for_id_to_be_present(element)
+        attribute = self.context.driver.find_element(By.ID, element).get_attribute('value')
+        return attribute
