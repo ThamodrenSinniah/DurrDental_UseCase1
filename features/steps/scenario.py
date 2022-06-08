@@ -1,6 +1,6 @@
 import time
 from selenium import webdriver
-from selenium.common import TimeoutException, NoAlertPresentException, NoSuchElementException
+from selenium.common import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -58,28 +58,12 @@ class Scenario:
             print('id = ' + element + ' cannot be found')
             raise te
 
-    def id_is_present(self, element):
-        try:
-            WebDriverWait(self.context.driver, 5).until(EC.presence_of_element_located((By.ID, element)))
-            if self.context.driver.find_element(By.ID, element).is_displayed():
-                return True
-        except NoSuchElementException:
-            return False
-        except TimeoutException:
-            return False
-
     def wait_for_name_to_be_present(self, element):
         try:
             WebDriverWait(self.context.driver, 20).until(EC.presence_of_element_located((By.NAME, element)))
         except TimeoutException as te:
             print('name = ' + element + ' cannot be found')
             raise te
-
-    def name_is_present(self, element):
-        if self.context.driver.find_element(By.NAME, element).is_displayed():
-            return True
-        else:
-            return False
 
     def wait_for_css_to_be_present(self, element):
         try:
@@ -94,6 +78,26 @@ class Scenario:
         except TimeoutException as te:
             print('xpath = ' + element + ' cannot be found')
             raise te
+
+    def id_is_present(self, element):
+        try:
+            WebDriverWait(self.context.driver, 5).until(EC.presence_of_element_located((By.ID, element)))
+            if self.context.driver.find_element(By.ID, element).is_displayed():
+                return True
+        except NoSuchElementException:
+            return False
+        except TimeoutException:
+            return False
+
+    def name_is_present(self, element):
+        try:
+            WebDriverWait(self.context.driver, 5).until(EC.presence_of_element_located((By.NAME, element)))
+            if self.context.driver.find_element(By.NAME, element).is_displayed():
+                return True
+        except NoSuchElementException:
+            return False
+        except TimeoutException:
+            return False
 
     def xpath_is_present(self, element):
         try:
